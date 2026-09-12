@@ -12,7 +12,7 @@ struct node* createNode(int data){
     struct node* newNode= (struct node*)malloc(sizeof(struct node));
     
     if(newNode==NULL){
-        printf("Dynamic memory allocation failed!");
+        printf("Dynamic memory allocation failed!\n");
         exit(1);
     }
     
@@ -65,7 +65,8 @@ struct node* insertMiddle(struct node* head, int data, int pos){
     while(pos!=2){
 
         if(ptr->next == NULL){
-            printf("Position exceeds allowed range!");
+            printf("Position exceeds allowed range!\n");
+            free(newNode);
             return head;
         }
 
@@ -83,7 +84,7 @@ struct node* insertMiddle(struct node* head, int data, int pos){
 
 struct node* deleteStart(struct node* head){
     if(head==NULL){
-        printf("LL is empty");
+        printf("LL is empty\n");
         return head;
     }
 
@@ -97,7 +98,7 @@ struct node* deleteStart(struct node* head){
 
 struct node* deleteEnd(struct node* head){
     if(head==NULL){
-        printf("LL is empty");
+        printf("LL is empty\n");
         return head;
     }
 
@@ -125,7 +126,7 @@ struct node* deleteEnd(struct node* head){
 
 struct node* deleteMiddle(struct node* head,int pos){
     if(head == NULL){
-        printf("LL is empty!");
+        printf("LL is empty!\n");
         return head;
     }
 
@@ -141,7 +142,7 @@ struct node* deleteMiddle(struct node* head,int pos){
     while(pos!=2){
 
         if(ptr->next==NULL){
-            printf("pos outside allowed range!");
+            printf("pos outside allowed range!\n");
             return head;
         }
 
@@ -151,7 +152,7 @@ struct node* deleteMiddle(struct node* head,int pos){
 
 
     if(ptr->next==NULL){
-        printf("pos outside allowed range!");
+        printf("pos outside allowed range!\n");
         return head;
     }
 
@@ -162,4 +163,130 @@ struct node* deleteMiddle(struct node* head,int pos){
     free(temp);
 
     return head;
+}
+
+int searchElement(struct node* head,int target){
+    if(head==NULL){
+        printf("LL is empty!\n");
+        return -1;
+    }
+
+    struct node* ptr = head;
+    int pos =1;
+    while(ptr!=NULL){
+        if(ptr->data==target){
+            return pos;
+        }
+        ptr=ptr->next;
+        pos++;
+    }
+
+    return -1;
+}
+
+struct node* reverseList(struct node* head){
+    
+    if(head==NULL){
+        printf("List is empty\n");
+        return head;
+    }
+    
+    struct node* curNode = head;
+    struct node* prevNode= NULL;
+    struct node* nextNode=NULL;
+
+    while(curNode){
+        nextNode=curNode->next;
+        curNode->next=prevNode;
+        prevNode=curNode;
+        curNode=nextNode;
+    }
+
+    return prevNode;
+}
+
+void displayList(struct node* head){
+
+    if(head==NULL){
+        printf("LL is empty\n");
+        return;
+    }
+
+    struct node* ptr=head;
+
+    while(ptr!=NULL){
+        printf("%d->",ptr->data);
+        ptr=ptr->next;
+    }
+
+    printf("NULL \n");
+}
+
+struct node* concantLists(struct node* head1,struct node* head2){
+    if(head1==NULL){
+        return head2;
+    }
+
+    if(head2==NULL){
+        return head1;
+    }
+
+    struct node* ptr1=head1;
+    
+    while(ptr1->next!=NULL){
+        ptr1 = ptr1->next;
+    }
+
+    ptr1->next=head2;//connects entire sll2 to end of sll1
+
+    return head1;
+}
+
+int countNodes(struct node* head){
+    int c=0;
+    struct node* ptr = head;
+
+    while(ptr!=NULL){
+        ptr=ptr->next;
+        c++;
+    }
+
+    return c;
+}
+
+void splitListOddEven(struct node* head, struct node** oddHead, struct node** evenHead){
+    *oddHead=NULL;
+    *evenHead=NULL;
+
+    struct node* ptr=head;
+    int pos =1;
+    
+    while(ptr!=NULL){
+        if(pos%2!=0){
+            *oddHead=insertEnd(*oddHead,ptr->data);
+        }else{
+            *evenHead=insertEnd(*evenHead,ptr->data);
+        }
+
+        ptr=ptr->next;
+        pos++;
+    }
+}
+
+struct node* freeNodes(struct node* head){
+    
+    if(head==NULL){
+        return head;
+    }
+    
+    struct node* ptr=head;
+    struct node* temp=NULL;
+    while(ptr!=NULL){
+        temp = ptr;
+        ptr=ptr->next;
+        free(temp);
+    }
+
+    return NULL;
+    
 }
