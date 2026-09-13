@@ -5,6 +5,7 @@ struct node
 {
     int data;
     struct node* next;
+    struct node* prev;
 };
 
 struct node* createNode(int data){
@@ -16,6 +17,7 @@ struct node* createNode(int data){
     }
     
     newNode->next=NULL;
+    newNode->prev=NULL;
     newNode->data=data;
 
     return newNode;
@@ -23,49 +25,63 @@ struct node* createNode(int data){
 
 struct node* insertStart(struct node* tail,int data) {
     struct node* newNode = createNode(data);
-    
-    if(tail == NULL){
+
+    if(tail==NULL){
         newNode->next=newNode;
-        return newNode;
+        newNode->prev=newNode;
+         return newNode;
     }
 
-    //in cll tail->next is head, 
     newNode->next=tail->next;
-    tail->next=newNode; //newNode becomes head
+    newNode->prev=tail;
+    
+    tail->next->prev=newNode;
 
-    return tail; //tail remains same
+    tail->next=newNode;
+
+    return tail;
 }
 
-struct node* insertEnd(struct node* tail, int data){
+struct node* insertEnd(struct node* tail,int data) {
     struct node* newNode = createNode(data);
 
     if(tail==NULL){
         newNode->next=newNode;
-        return newNode;
+        newNode->prev=newNode;
+         return newNode;
     }
 
     newNode->next=tail->next;
+    newNode->prev=tail;
+    
+    tail->next->prev=newNode;
+
     tail->next=newNode;
 
-    return newNode; //newNode becomes tail
+    return newNode;
 }
 
 struct node* insertMiddle(struct node* tail,int data,int pos){
     struct node* newNode = createNode(data);
 
     if(tail==NULL){
-        newNode->next=newNode;
+        newNode->next=newNode;      // points to itself
+        newNode->prev=newNode;      // points to itself
         return newNode;
     }
 
-
     if(pos==1){
-        newNode->next=tail->next;
-        tail->next=newNode;
+        newNode->next=tail->next;   // next = old head
+        newNode->prev=tail;         // prev = tail
+
+        tail->next->prev=newNode;   // old head prev = new node
+        
+        tail->next=newNode;         // new node becomes head
+
         return tail;
     }
 
-    struct node* ptr=tail->next; //ptr = head
+    struct node* ptr=tail->next;     // start from head
 
     while(pos!=2){
         if(ptr->next == tail->next){
@@ -78,14 +94,18 @@ struct node* insertMiddle(struct node* tail,int data,int pos){
         pos--;
     }
 
-    newNode->next=ptr->next;
-    ptr->next=newNode;
+    newNode->next=ptr->next;        // link to next node
+    newNode->prev=ptr;              // link to previous node
+    
+    ptr->next->prev=newNode;        // next node prev = new node
+    
+    ptr->next=newNode;              // previous node next = new node
 
     if(ptr==tail){
-        return newNode;
+        return newNode;             // new node becomes tail
     }
 
-    return tail;
+    return tail;                    // tail unchanged
 }
 
 struct node* deleteStart(struct node* tail){
@@ -100,34 +120,35 @@ struct node* deleteStart(struct node* tail){
     }
 
     struct node* temp=tail->next;
+    
     tail->next=temp->next;
+    temp->next->prev=tail;
+
     free(temp);
 
     return tail;
 }
 
+
 struct node* deleteEnd(struct node* tail){
-    if(tail == NULL){
+    if(tail==NULL){
         printf("LL is empty\n");
         return tail;
     }
 
-    if(tail->next == tail){
+    if(tail->next==tail){ //only one node present
         free(tail);
         return NULL;
     }
 
-    struct node* ptr=tail->next;
+    struct node* prefinal=tail->prev;
 
-    while(ptr->next!=tail){
-        ptr=ptr->next;
-    }
-
-    ptr->next=tail->next;
+    prefinal->next=tail->next;
+    tail->next->prev=prefinal;
 
     free(tail);
 
-    return ptr;
+    return prefinal;
 }
 
 struct node* deleteMiddle(struct node* tail,int pos){
@@ -144,6 +165,7 @@ struct node* deleteMiddle(struct node* tail,int pos){
     if(pos==1){
         struct node* temp = tail->next;
         tail->next=temp->next;
+        temp->next->prev=tail;
         free(temp);
         return tail;
     }
@@ -166,7 +188,9 @@ struct node* deleteMiddle(struct node* tail,int pos){
     }
 
     struct node* temp = ptr->next;
+
     ptr->next=temp->next;
+    temp->next->prev=ptr;
     
     if(temp==tail){
         free(temp);
@@ -216,7 +240,9 @@ struct node* reverseList(struct node* tail){
 
     do{
         nextNode=cur->next;
+
         cur->next=prev;
+        cur->prev=nextNode;
 
         prev=cur;
         cur = nextNode;
@@ -224,7 +250,6 @@ struct node* reverseList(struct node* tail){
 
     return head;
 }
-
 
 void displayList(struct node* tail){
 
@@ -236,7 +261,7 @@ void displayList(struct node* tail){
     struct node* ptr = tail->next;   // head
 
     do{
-        printf("%d->", ptr->data);
+        printf("%d<->", ptr->data);
         ptr = ptr->next;
 
     }while(ptr != tail->next);
@@ -258,7 +283,10 @@ struct node* concatLists(struct node* tail1, struct node* tail2){
     struct node* head2 = tail2->next;
 
     tail1->next = head2;
+    head2->prev=tail1;
+
     tail2->next = head1;
+    head1->prev=tail2;
 
     return tail2;
 }
@@ -301,10 +329,40 @@ struct node* freeNodes(struct node* tail){
     return NULL;
 }
 
+void displayBoth(struct node* tail){
+
+    if(tail == NULL){
+        printf("LL is empty\n");
+        return;
+    }
+
+    struct node* ptr = tail->next;   // head
+
+    printf("Forward: ");
+
+    do{
+        printf("%d<->", ptr->data);
+        ptr = ptr->next;
+    }while(ptr != tail->next);
+
+    printf("(HEAD)\n");
+
+    ptr = tail;
+
+    printf("Reverse: ");
+
+    do{
+        printf("%d<->", ptr->data);
+        ptr = ptr->prev;
+    }while(ptr != tail);
+
+    printf("(TAIL)\n");
+}
+
 int main(){
-    
+
     printf("\nMENU:\n");
-    printf("1. Initialize CLL\n");
+    printf("1. Initialize DCLL\n");
     printf("2. Insert Start\n");
     printf("3. Insert End\n");
     printf("4. Insert Middle\n");
@@ -314,10 +372,11 @@ int main(){
     printf("8. Search Element\n");
     printf("9. Reverse List\n");
     printf("10. Display List\n");
-    printf("11. Concatenate Lists\n");
-    printf("12. Count Nodes\n");
-    printf("13. Free List\n");
-    printf("14. Exit\n");
+    printf("11. Display Forward and Reverse\n");
+    printf("12. Concatenate Lists\n");
+    printf("13. Count Nodes\n");
+    printf("14. Free List\n");
+    printf("15. Exit\n");
 
     struct node* tail = NULL;
 
@@ -326,6 +385,7 @@ int main(){
     int pos;
 
     while(1){
+
         printf("Enter your choice: ");
         scanf("%d",&choice);
 
@@ -337,6 +397,7 @@ int main(){
 
                 tail = createNode(data);
                 tail->next = tail;
+                tail->prev = tail;
                 break;
 
             case 2:
@@ -400,11 +461,15 @@ int main(){
                 break;
 
             case 10:
-                printf("CLL: ");
+                printf("DCLL: ");
                 displayList(tail);
                 break;
 
-            case 11:{
+            case 11:
+                displayBoth(tail);
+                break;
+
+            case 12:{
                 struct node* tail2 = NULL;
                 int n;
 
@@ -424,16 +489,16 @@ int main(){
                 break;
             }
 
-            case 12:
+            case 13:
                 printf("Count: %d\n",countNodes(tail));
                 break;
 
-            case 13:
+            case 14:
                 tail = freeNodes(tail);
                 printf("List freed\n");
                 break;
 
-            case 14:
+            case 15:
                 tail = freeNodes(tail);
                 printf("Exiting...\n");
                 return 0;
