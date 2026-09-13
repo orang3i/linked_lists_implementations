@@ -366,7 +366,22 @@ int main(){
                 displayList(head);
                 break;
             case 11:
-                printf("Impl later");
+                struct node* head2 = NULL;
+                int n;
+
+                printf("Enter number of elements in second list: ");
+                scanf("%d",&n);
+
+                for(int i=0;i<n;i++){
+                    printf("Enter data: ");
+                    scanf("%d",&data);
+
+                    head2 = insertEnd(head2,data);
+                }
+
+                head = concantLists(head,head2);
+
+                printf("Lists concatenated\n");
                 break;
             case 12:
                 printf("Count : %d\n",countNodes(head));

@@ -314,4 +314,180 @@ struct node* freeNodes(struct node* head){
     
 }
 
-//Forward and Reverse Display of DLL​
+void displayBoth(struct node* head){
+
+    if(head==NULL){
+        printf("LL is empty\n");
+        return;
+    }
+
+    struct node* ptr= head;
+
+    printf("Forward: ");
+
+    while(ptr->next != NULL){
+        printf("%d<->",ptr->data);
+        ptr=ptr->next;
+    }
+
+    printf("%d<->NULL\n",ptr->data);
+
+    printf("Reverse: ");
+
+    while(ptr!=NULL){
+        printf("%d<->",ptr->data);
+        ptr=ptr->prev;
+    }
+
+    printf("NULL\n");
+}
+
+
+
+int main(){
+
+    printf("MENU:\n");
+    printf("1.Initialize DLL\n");
+    printf("2.Insert Start\n");
+    printf("3.Insert End\n");
+    printf("4.Insert Middle\n");
+    printf("5.Delete Start\n");
+    printf("6.Delete End\n");
+    printf("7.Delete Middle\n");
+    printf("8.Search Element\n");
+    printf("9.Reverse List\n");
+    printf("10.Display List\n");
+    printf("11.Concat Lists\n");
+    printf("12.Count Nodes\n");
+    printf("13.Forward and Reverse Display\n");
+    printf("14.Free List\n");
+    printf("15.Exit\n");
+
+    struct node* head = NULL;
+
+    int data;
+    int pos;
+
+    while(1){
+
+        int choice;
+
+        printf("\nEnter your choice: ");
+        scanf("%d",&choice);
+
+        switch(choice){
+
+            case 1:
+                printf("Enter data for first element: ");
+                scanf("%d",&data);
+
+                head = createNode(data);
+                break;
+
+            case 2:
+                printf("Enter data to insert at start: ");
+                scanf("%d",&data);
+
+                head = insertStart(head,data);
+                break;
+
+            case 3:
+                printf("Enter data to insert at end: ");
+                scanf("%d",&data);
+
+                head = insertEnd(head,data);
+                break;
+
+            case 4:
+                printf("Enter pos: ");
+                scanf("%d",&pos);
+
+                printf("Enter data to insert: ");
+                scanf("%d",&data);
+
+                head = insertMiddle(head,data,pos);
+                break;
+
+            case 5:
+                head = deleteStart(head);
+                break;
+
+            case 6:
+                head = deleteEnd(head);
+                break;
+
+            case 7:
+                printf("Enter pos: ");
+                scanf("%d",&pos);
+
+                head = deleteMiddle(head,pos);
+                break;
+
+            case 8:{
+                printf("Enter element to search: ");
+                scanf("%d",&data);
+
+                int index = searchElement(head,data);
+
+                if(index == -1){
+                    printf("Element not found\n");
+                }
+                else{
+                    printf("Element found at position %d\n",index);
+                }
+
+                break;
+            }
+
+            case 9:
+                head = reverseList(head);
+                printf("List reversed\n");
+                break;
+
+            case 10:
+                printf("DLL: ");
+                displayList(head);
+                break;
+
+            case 11:{
+                struct node* head2 = NULL;
+                int n;
+
+                printf("Enter number of elements in second list: ");
+                scanf("%d",&n);
+
+                for(int i=0;i<n;i++){
+                    printf("Enter data: ");
+                    scanf("%d",&data);
+
+                    head2 = insertEnd(head2,data);
+                }
+
+                head = concantLists(head,head2);
+
+                printf("Lists concatenated\n");
+                break;
+            }
+
+            case 12:
+                printf("Count: %d\n",countNodes(head));
+                break;
+
+            case 13:
+                displayBoth(head);
+                break;
+
+            case 14:
+                head = freeNodes(head);
+                printf("List freed\n");
+                break;
+
+            case 15:
+                head = freeNodes(head);
+                return 0;
+
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+}
